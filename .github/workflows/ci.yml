@@ -42,7 +42,7 @@ jobs:
         run: npm test
 
       - name: Run integration tests
-        run: npm run test:integration || true # Si no hay integración, no falla el job
+        run: npm run test:integration || true 
 
   format:
     runs-on: ubuntu-latest
@@ -78,8 +78,4 @@ jobs:
         run: npm install
 
       - name: Build the project
-<<<<<<< HEAD
         run: npm run build
-=======
-        run: npm run build
->>>>>>> main
