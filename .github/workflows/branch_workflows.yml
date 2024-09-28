@@ -1,0 +1,39 @@
+name: Restrict PR Targets
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+
+jobs:
+  check-target-branches:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check if target branch is allowed
+        run: |
+          TARGET_BRANCH=${{ github.event.pull_request.base.ref }}
+          SOURCE_BRANCH=${{ github.event.pull_request.head.ref }}
+
+          if [[ "$TARGET_BRANCH" == "main" ]]; then
+            if [[ "$SOURCE_BRANCH" != "develop" && ! "$SOURCE_BRANCH" =~ ^hotfix/ ]]; then
+              echo "Error: You can only merge to 'main' from 'develop' or 'hotfix/*' branches."
+              exit 1
+            fi
+          fi
+          echo "PR target and source branches are valid."
+
+  check-approval:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check for PR approval
+        run: |
+          # Obtener el número de aprobaciones del PR usando la API de GitHub
+          APPROVED=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          "${{ github.event.pull_request.url }}/reviews" | jq '[.[] | select(.state == "APPROVED")] | length')
+
+          # Verificar si hay al menos una aprobación
+          if [ "$APPROVED" -eq 0 ]; then
+            echo "Error: The pull request must be approved before merging."
+            exit 1
+          fi
+
+          echo "Pull request has been approved."
