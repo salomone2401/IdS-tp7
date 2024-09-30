@@ -6,7 +6,7 @@ on:
 
 jobs:
   check-target-branches:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Check if target branch is allowed
         run: |
@@ -21,7 +21,7 @@ jobs:
           fi
           echo "PR target and source branches are valid."
   check-approval:
-      runs-on: ubuntu-latest
+      runs-on: ubuntu-22.04
       steps:
         - name: Check for PR approval
           run: |
