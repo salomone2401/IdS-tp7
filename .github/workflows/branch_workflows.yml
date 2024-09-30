@@ -20,17 +20,20 @@ jobs:
             fi
           fi
           echo "PR target and source branches are valid."
+
   check-approval:
-      runs-on: ubuntu-22.04
-      steps:
-        - name: Check for PR approval
-          run: |
-            # Obtener el número de aprobaciones del PR usando la API de GitHub
-            APPROVED=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            "${{ github.event.pull_request.url }}/reviews" | jq '[.[] | select(.state == "approved")] | length')
-            
-            # Verificar si hay al menos una aprobación
-            if [ "$APPROVED" -eq 0 ]; then
-              echo "Error: The pull request must be approved before merging."
-              exit 1
-            fi
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check for PR approval
+        run: |
+          # Obtener el número de aprobaciones del PR usando la API de GitHub
+          APPROVED=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          "${{ github.event.pull_request.url }}/reviews" | jq '[.[] | select(.state == "APPROVED")] | length')
+
+          # Verificar si hay al menos una aprobación
+          if [ "$APPROVED" -eq 0 ]; then
+            echo "Error: The pull request must be approved before merging."
+            exit 1
+          fi
+
+          echo "Pull request has been approved."
